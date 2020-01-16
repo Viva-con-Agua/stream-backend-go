@@ -8,9 +8,14 @@ import (
 )
 
 type (
+	RoleCreate struct {
+		Name   string `json:"name" validate:"required"`
+		Pillar string `json:"pillar" validate:"required"`
+	}
 	Role struct {
-		Value  string
-		Pillar string
+		Uuid   string `json:"uuid" validate:"required"`
+		Name   string `json:"name" validate:"required"`
+		Pillar string `json:"pillar" validate:"required"`
 	}
 	Roles struct {
 		Role []Role
