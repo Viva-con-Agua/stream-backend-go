@@ -33,7 +33,6 @@ func main() {
 	e.Use(store)
 	e.Validator = &CustomValidator{validator: validator.New()}
 
-	e.GET("/", controllers.HelloWorld)
 	e.POST("/auth/signin", controllers.SignIn)
 	auth := e.Group("/auth")
 	auth.Use(utils.SessionAuth)

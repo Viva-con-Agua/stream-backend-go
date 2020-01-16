@@ -13,7 +13,7 @@ import (
 /**
  * insert user into database
  */
-func InsertUser(u *models.UserCreate) (err error) {
+func SignUp(u *models.UserCreate) (err error) {
 	// Create uuid
 	Uuid, err := uuid.NewRandom()
 	if err != nil {

@@ -51,7 +51,7 @@ func SignUp(c echo.Context) (err error) {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 	// insert u into database
-	if err = database.InsertUser(u); err != nil {
+	if err = database.SignUp(u); err != nil {
 		return c.JSON(http.StatusInternalServerError, models.InternelServerError())
 	}
 	//create new uuid
