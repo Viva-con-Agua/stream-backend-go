@@ -62,18 +62,22 @@ func SignUp(u *models.UserCreate) (err error) {
  */
 func GetUserList() (users []models.User, err error) {
 	// execute the query
-	rows, err := utils.DB.Query("SELECT * FROM User LEFT JOIN Profile ON User.id = Profile.User_id ")
+	userQuery := "SELECT DISTINCT User.id, User.uuid, Profile.email, Profile.first_name, Profile.last_name, User.updated, User.created " +
+		"FROM User LEFT JOIN Profile ON User.id = Profile.User_id " +
+		"LEFT JOIN User_has_Role ON User.id = User_has_Role.User_id " +
+		"LEFT JOIN Role ON User_has_Role.Role_Id = Role.id"
+	rows, err := utils.DB.Query(userQuery)
 	if err != nil {
 		log.Print("Database Error", err)
 		return nil, err
 	}
 	// define variable for each column
-	var id, profile_id, user_id, updated, created int
+	var id, updated, created int
 	var uuid, email, first_name, last_name string
 	// convert each row
 	for rows.Next() {
 		//scan row
-		err = rows.Scan(&id, &uuid, &updated, &created, &profile_id, &email, &first_name, &last_name, &user_id)
+		err = rows.Scan(&id, &uuid, &email, &first_name, &last_name, &updated, &created)
 		if err != nil {
 			log.Print("Database Error: ", err)
 			return nil, err
