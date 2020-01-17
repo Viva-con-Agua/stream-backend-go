@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 
 	"../database"
@@ -8,10 +9,13 @@ import (
 	"github.com/labstack/echo"
 )
 
+type ()
+
 /**
  * join user to role
  */
 func JoinUserRole(c echo.Context) (err error) {
+
 	// create body as models.Role
 	body := new(models.UserRole)
 	// save data to body
@@ -34,7 +38,16 @@ func JoinUserRole(c echo.Context) (err error) {
  * Response list of models.User
  */
 func GetUserList(c echo.Context) (err error) {
-	response, err := database.GetUserList()
+	query := new(models.QueryUser)
+
+	if err = c.Bind(query); err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+	page := query.Page()
+	sort := query.OrderBy()
+	filter := query.Filter()
+	log.Print(filter)
+	response, err := database.GetUserList(page, sort, filter)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.InternelServerError)
 	}

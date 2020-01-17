@@ -60,12 +60,16 @@ func SignUp(u *models.UserCreate) (err error) {
 /**
  * select list of user
  */
-func GetUserList() (users []models.User, err error) {
+func GetUserList(page string, sort string, filter string) (users []models.User, err error) {
 	// execute the query
-	userQuery := "SELECT DISTINCT User.id, User.uuid, Profile.email, Profile.first_name, Profile.last_name, User.updated, User.created " +
+	userQuery := "SELECT User.id, User.uuid, Profile.email, Profile.first_name, Profile.last_name, User.updated, User.created " +
 		"FROM User LEFT JOIN Profile ON User.id = Profile.User_id " +
 		"LEFT JOIN User_has_Role ON User.id = User_has_Role.User_id " +
-		"LEFT JOIN Role ON User_has_Role.Role_Id = Role.id"
+		"LEFT JOIN Role ON User_has_Role.Role_Id = Role.id " +
+		filter + " " +
+		"GROUP BY User.id " +
+		sort + " " +
+		page
 	rows, err := utils.DB.Query(userQuery)
 	if err != nil {
 		log.Print("Database Error", err)
