@@ -41,8 +41,11 @@ func main() {
 
 	apiV1 := e.Group("/api/v1")
 	apiV1.Use(utils.SessionAuth)
+	apiV1.GET("/users/:id", controllers.GetUser)
 	apiV1.GET("/users", controllers.GetUserList)
+	apiV1.PUT("/users", controllers.UpdateUser)
 	apiV1.POST("/users/role", controllers.JoinUserRole)
+	apiV1.DELETE("/users", controllers.DeleteUser)
 	apiV1.POST("/roles", controllers.PostRole)
 	apiV1.GET("/roles", controllers.GetRolesList)
 

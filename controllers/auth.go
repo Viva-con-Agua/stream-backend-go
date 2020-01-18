@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 
 	"../database"
 	"../models"
@@ -11,7 +12,7 @@ import (
 )
 
 func SignIn(c echo.Context) (err error) {
-	u := new(models.UserSignIn)
+	u := new(models.LoginInfo)
 	if err = c.Bind(u); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
@@ -52,6 +53,9 @@ func SignUp(c echo.Context) (err error) {
 	}
 	// insert u into database
 	if err = database.SignUp(u); err != nil {
+		if strings.Contains(err.Error(), "Duplicate entry") {
+			return c.JSON(http.StatusConflict, models.Conflict())
+		}
 		return c.JSON(http.StatusInternalServerError, models.InternelServerError())
 	}
 	//create new uuid
