@@ -1,6 +1,10 @@
 package models
 
 type (
+	Page struct {
+		Offset int
+		Count  int
+	}
 	LoginInfo struct {
 		Email    string `json:"email" validate:"required"`
 		Password string `json:"password" validate:"required"`

@@ -54,6 +54,7 @@ func GetUserList(c echo.Context) (err error) {
 	if err = c.Bind(query); err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
+	query.Defaults()
 	page := query.Page()
 	sort := query.OrderBy()
 	filter := query.Filter()

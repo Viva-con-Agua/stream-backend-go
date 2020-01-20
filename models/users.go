@@ -1,5 +1,7 @@
 package models
 
+import "strconv"
+
 type (
 	UserCreate struct {
 		LoginInfo LoginInfo `json:"loginInfo" validate:"required"`
@@ -17,7 +19,7 @@ type (
 	}
 	QueryUser struct {
 		Offset string `query:"offset" default:"0"`
-		Size   string `query:"size" default:"40"`
+		Count  string `query:"count" default:"40"`
 		Email  string `query:"email" default:"%"`
 		Sort   string `query:"sort"`
 		SortBy string `query:"sortby"`
@@ -28,22 +30,26 @@ func (q *QueryUser) Defaults() {
 	if q.Offset == "" {
 		q.Offset = "0"
 	}
-	if q.Size == "" {
-		q.Size = "40"
+	if q.Count == "" {
+		q.Count = "40"
 	}
 	if q.Email == "" {
 		q.Email = "%"
 	}
 }
 
-func (q *QueryUser) Page() string {
-	if q.Size != "" {
-		if q.Offset != "" {
-			return "LIMIT " + q.Offset + ", " + q.Size
-		}
-		return "LIMIT " + q.Size
+func (q *QueryUser) Page() *Page {
+	var err error
+	page := new(Page)
+	page.Offset, err = strconv.Atoi(q.Offset)
+	if err != nil {
+		page.Offset = 0
 	}
-	return ""
+	page.Count, err = strconv.Atoi(q.Count)
+	if err != nil {
+		page.Count = 40
+	}
+	return page
 }
 
 func (q *QueryUser) OrderBy() string {

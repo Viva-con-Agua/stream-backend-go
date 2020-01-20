@@ -75,14 +75,12 @@ func GetUser(search string) (users []models.User, err error) {
 		log.Print("Database Error", err)
 		return nil, err
 	}
-	// define variable for each column
-	var id, updated, created int
-	var uuid, email, first_name, last_name string
-	// convert each row
+	//define variable for user database id
+	var id int
 	user := new(models.User)
 	for rows.Next() {
 		//scan row
-		err = rows.Scan(&id, &uuid, &email, &first_name, &last_name, &updated, &created)
+		err = rows.Scan(&id, &user.Uuid, &user.Email, &user.FirstName, &user.LastName, &user.Updated, &user.Created)
 		if err != nil {
 			log.Print("Database Error: ", err)
 			return nil, err
@@ -95,14 +93,7 @@ func GetUser(search string) (users []models.User, err error) {
 			log.Print("Database Error: ", err)
 			return nil, err
 		}
-
-		// fill models.User
-		user.Uuid = uuid
-		user.Email = email
-		user.FirstName = first_name
-		user.LastName = last_name
-		user.Updated = updated
-		user.Created = created
+		//join roles to user
 		user.Roles = roles
 	}
 	if id == 0 {
@@ -115,7 +106,7 @@ func GetUser(search string) (users []models.User, err error) {
 /**
  * select list of user
  */
-func GetUserList(page string, sort string, filter string) (users []models.User, err error) {
+func GetUserList(page *models.Page, sort string, filter string) (users []models.User, err error) {
 	// execute the query
 	userQuery := "SELECT User.id, User.uuid, Profile.email, Profile.first_name, Profile.last_name, User.updated, User.created " +
 		"FROM User LEFT JOIN Profile ON User.id = Profile.User_id " +
@@ -124,19 +115,20 @@ func GetUserList(page string, sort string, filter string) (users []models.User, 
 		filter + " " +
 		"GROUP BY User.id " +
 		sort + " " +
-		page
-	rows, err := utils.DB.Query(userQuery)
+		"LIMIT ?, ?"
+	rows, err := utils.DB.Query(userQuery, page.Offset, page.Count)
 	if err != nil {
 		log.Print("Database Error", err)
 		return nil, err
 	}
-	// define variable for each column
-	var id, updated, created int
-	var uuid, email, first_name, last_name string
+	// variable for user database id
+	var id int
 	// convert each row
 	for rows.Next() {
-		//scan row
-		err = rows.Scan(&id, &uuid, &email, &first_name, &last_name, &updated, &created)
+		//create user
+		user := new(models.User)
+		//scan row and fill user
+		err = rows.Scan(&id, &user.Uuid, &user.Email, &user.FirstName, &user.LastName, &user.Updated, &user.Created)
 		if err != nil {
 			log.Print("Database Error: ", err)
 			return nil, err
@@ -149,15 +141,9 @@ func GetUserList(page string, sort string, filter string) (users []models.User, 
 			return nil, err
 		}
 
-		// fill models.User
-		user := new(models.User)
-		user.Uuid = uuid
-		user.Email = email
-		user.FirstName = first_name
-		user.LastName = last_name
-		user.Updated = updated
-		user.Created = created
+		// join roles to user
 		user.Roles = roles
+		// append to list of user
 		users = append(users, *user)
 	}
 	return users, err
