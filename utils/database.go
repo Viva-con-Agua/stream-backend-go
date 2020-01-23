@@ -28,5 +28,12 @@ func ConnectDatabase() {
 		log.Fatal("database connection failed", err)
 	}
 	fmt.Println("Database successfully connected!")
+	//	query, err := ioutil.ReadFile("drops-database.sql")
+	//	if err != nil {
+	//		log.Fatal("read sql file failed", err)
+	//	}
+	//	if _, err := DB.Exec(string(query)); err != nil {
+	//		log.Fatal("database init failed", err)
+	//	}
 
 }

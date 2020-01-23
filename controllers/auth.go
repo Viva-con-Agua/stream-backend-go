@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -9,6 +10,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo-contrib/session"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func SignIn(c echo.Context) (err error) {
@@ -24,6 +26,11 @@ func SignIn(c echo.Context) (err error) {
 		sess.Values["valid"] = true
 		sess.Save(c.Request(), c.Response())
 	}
+	var hashedPassword []byte
+	if hashedPassword, err = bcrypt.GenerateFromPassword([]byte(u.Password), 32); err != nil {
+		log.Print(err)
+	}
+	log.Print(string(hashedPassword))
 	return c.JSON(http.StatusOK, "login")
 }
 

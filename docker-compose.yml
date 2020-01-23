@@ -11,20 +11,20 @@ services:
       default:
         ipv4_address: 172.2.100.1
 
-  drops-database:
-     image: mariadb
-     container_name: drops-database
-     environment: 
-      - MYSQL_DATABASE=drops 
-      - MYSQL_USER=drops
-      - MYSQL_PASSWORD=drops 
-      - MYSQL_ROOT_PASSWORD=yes 
-     restart: unless-stopped
-     volumes: 
-       - ./volumes/drops-database/mysql/:/var/lib/mysql/
-     networks:
-       default:
-         ipv4_address: 172.2.200.1
+#  drops-database:
+#     image: mariadb
+#     container_name: drops-database
+#     environment: 
+#      - MYSQL_DATABASE=drops 
+#      - MYSQL_USER=drops
+#      - MYSQL_PASSWORD=drops 
+#      - MYSQL_ROOT_PASSWORD=yes 
+#     restart: unless-stopped
+#     volumes: 
+#       - ./volumes/drops-database/mysql/:/var/lib/mysql/
+#     networks:
+#       default:
+#         ipv4_address: 172.2.200.1
 
   redis:
     image: redis
