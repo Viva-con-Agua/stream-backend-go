@@ -106,17 +106,17 @@ func GetUser(search string) (users []models.User, err error) {
 /**
  * select list of user
  */
-func GetUserList(page *models.Page, sort string, filter string) (users []models.User, err error) {
+func GetUserList(page *models.Page, sort string, filter *models.FilterUser) (users []models.User, err error) {
 	// execute the query
-	userQuery := "SELECT User.id, User.uuid, Profile.email, Profile.first_name, Profile.last_name, User.updated, User.created " +
-		"FROM User LEFT JOIN Profile ON User.id = Profile.User_id " +
-		"LEFT JOIN User_has_Role ON User.id = User_has_Role.User_id " +
+	userQuery := "SELECT u.id, u.uuid, p.email, p.first_name, p.last_name, u.updated, u.created " +
+		"FROM User AS u LEFT JOIN Profile AS p ON u.id = p.User_id " +
+		"LEFT JOIN User_has_Role ON u.id = User_has_Role.User_id " +
 		"LEFT JOIN Role ON User_has_Role.Role_Id = Role.id " +
-		filter + " " +
-		"GROUP BY User.id " +
+		"WHERE p.email LIKE ? " +
+		"GROUP BY u.id " +
 		sort + " " +
 		"LIMIT ?, ?"
-	rows, err := utils.DB.Query(userQuery, page.Offset, page.Count)
+	rows, err := utils.DB.Query(userQuery, filter.Email, page.Offset, page.Count)
 	if err != nil {
 		log.Print("Database Error", err)
 		return nil, err

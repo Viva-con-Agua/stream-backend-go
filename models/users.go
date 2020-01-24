@@ -24,6 +24,9 @@ type (
 		Sort   string `query:"sort"`
 		SortBy string `query:"sortby"`
 	}
+	FilterUser struct {
+		Email string
+	}
 )
 
 func (q *QueryUser) Defaults() {
@@ -62,18 +65,17 @@ func (q *QueryUser) OrderBy() string {
 		return ""
 	}
 	if q.SortBy == "email" {
-		return sort + " Profile.email " + asc
+		return sort + " p.email " + asc
 	}
 	return sort
 }
 
-func (q *QueryUser) Filter() string {
-	var filter = "WHERE"
+func (q *QueryUser) Filter() *FilterUser {
+	filter := new(FilterUser)
 	if q.Email != "" {
-		filter = filter + " Profile.email LIKE '" + q.Email + "'"
-	}
-	if filter == "WHERE" {
-		return ""
+		filter.Email = q.Email
+	} else {
+		filter.Email = "%"
 	}
 	return filter
 }

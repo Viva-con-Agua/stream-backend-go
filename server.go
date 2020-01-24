@@ -33,11 +33,11 @@ func main() {
 	e.Use(store)
 	e.Validator = &CustomValidator{validator: validator.New()}
 
-	e.POST("/auth/signin", controllers.SignIn)
 	auth := e.Group("/auth")
-	auth.Use(utils.SessionAuth)
+	auth.POST("/signin", controllers.SignIn)
+	auth.POST("/signup", controllers.SignUp)
+	//	auth.Use(utils.SessionAuth)
 	auth.GET("/signout", controllers.SignOut)
-	auth.POST("/signup", controllers.SignUp, Roles.Permission)
 
 	apiV1 := e.Group("/api/v1")
 	apiV1.Use(utils.SessionAuth)
