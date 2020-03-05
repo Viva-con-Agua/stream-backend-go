@@ -2,14 +2,14 @@ version: '3'
 
 services:
   
-  drops-backend:
-    image: vivaconagua/drops-backend:latest
-    build: .
-    container_name: drops-backend
-    restart: unless-stopped
-    networks:
-      default:
-        ipv4_address: 172.2.100.1
+#  drops-backend:
+#    image: vivaconagua/drops-backend:latest
+#    build: .
+#    container_name: drops-backend
+#    restart: unless-stopped
+#    networks:
+#      default:
+#        ipv4_address: 172.2.100.1
 
 #  drops-database:
 #     image: mariadb
@@ -32,9 +32,9 @@ services:
     restart: unless-stopped
     networks:
       default:
-        ipv4_address: 172.2.150.1
+        ipv4_address: 172.2.150.2
 
 networks:
   default:
     external:
-      name: pool-network
+      name: developpool_pool-network

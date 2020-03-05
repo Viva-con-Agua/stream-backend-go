@@ -14,7 +14,7 @@ import (
 
 func RedisSession() echo.MiddlewareFunc {
 	client := redis.NewClient(&redis.Options{
-		Addr: "172.2.150.1:6379",
+		Addr: "172.2.150.2:6379",
 	})
 
 	redis, err := redisstore.NewRedisStore(client)
