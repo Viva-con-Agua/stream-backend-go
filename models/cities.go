@@ -8,29 +8,29 @@ import (
 )
 
 type (
-	RoleCreate struct {
+	CityCreate struct {
 		Name   string `json:"name" validate:"required"`
 		Pillar string `json:"pillar" validate:"required"`
 	}
-	Role struct {
+	City struct {
 		Uuid   string `json:"uuid" validate:"required"`
 		Name   string `json:"name" validate:"required"`
 		Pillar string `json:"pillar" validate:"required"`
 	}
-	Roles struct {
-		Role []Role
+	Citys struct {
+		City []City
 	}
 )
 
-func (roles *Roles) AddRole(role Role) []Role {
-	roles.Role = append(roles.Role, role)
-	return roles.Role
+func (Citys *Citys) AddCity(City City) []City {
+	Citys.City = append(Citys.City, City)
+	return Citys.City
 }
 
-func (r *Roles) Permission(next echo.HandlerFunc) echo.HandlerFunc {
+func (r *Citys) Permission(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		sess, _ := session.Get("session", c)
-		if sess.Values["roles"] == nil {
+		if sess.Values["Citys"] == nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, pool.Unauthorized())
 		}
 		return next(c)

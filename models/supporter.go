@@ -3,12 +3,12 @@ package models
 import "strconv"
 
 type (
-	UserCreate struct {
+	SupporterCreate struct {
 		LoginInfo LoginInfo `json:"loginInfo" validate:"required"`
 		FirstName string    `json:"first_name" validate:"required"`
 		LastName  string    `json:"Last_name" validate:"required"`
 	}
-	User struct {
+	Supporter struct {
 		Uuid      string `json:"uuid" validate:"required"`
 		Email     string `json:"email" validate:"required"`
 		FirstName string `json:"first_name" validate:"required"`
@@ -17,19 +17,19 @@ type (
 		Updated   int    `json:"updated" validate:"required"`
 		Created   int    `json:"created" validate:"required"`
 	}
-	QueryUser struct {
+	QuerySupporter struct {
 		Offset string `query:"offset" default:"0"`
 		Count  string `query:"count" default:"40"`
 		Email  string `query:"email" default:"%"`
 		Sort   string `query:"sort"`
 		SortBy string `query:"sortby"`
 	}
-	FilterUser struct {
+	FilterSupporter struct {
 		Email string
 	}
 )
 
-func (q *QueryUser) Defaults() {
+func (q *QuerySupporter) Defaults() {
 	if q.Offset == "" {
 		q.Offset = "0"
 	}
@@ -41,7 +41,7 @@ func (q *QueryUser) Defaults() {
 	}
 }
 
-func (q *QueryUser) Page() *Page {
+func (q *QuerySupporter) Page() *Page {
 	var err error
 	page := new(Page)
 	page.Offset, err = strconv.Atoi(q.Offset)
@@ -55,7 +55,7 @@ func (q *QueryUser) Page() *Page {
 	return page
 }
 
-func (q *QueryUser) OrderBy() string {
+func (q *QuerySupporter) OrderBy() string {
 	var asc = "ASC"
 	if q.Sort == "DESC" {
 		asc = " DESC"
@@ -70,8 +70,8 @@ func (q *QueryUser) OrderBy() string {
 	return sort
 }
 
-func (q *QueryUser) Filter() *FilterUser {
-	filter := new(FilterUser)
+func (q *QuerySupporter) Filter() *FilterSupporter {
+	filter := new(FilterSupporter)
 	if q.Email != "" {
 		filter.Email = q.Email
 	} else {
