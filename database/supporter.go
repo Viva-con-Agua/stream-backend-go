@@ -1,13 +1,11 @@
 package database
 
 import (
-	"log"
-	"time"
-
 	"../models"
 	"../utils"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
+	"log"
+	"time"
 )
 
 /**
@@ -15,12 +13,12 @@ import (
  */
 func GetSupporter(search string) (Supporters []models.Supporter, err error) {
 	// execute the query
-	SupporterQuery := "SELECT Supporter.id, Supporter.uuid, Profile.email, Profile.first_name, Profile.last_name, Supporter.updated, Supporter.created " +
-		"FROM Supporter LEFT JOIN Profile ON Supporter.id = Profile.Supporter_id " +
-		"LEFT JOIN Supporter_has_Role ON Supporter.id = Supporter_has_Role.Supporter_id " +
-		"LEFT JOIN Role ON Supporter_has_Role.Role_Id = Role.id " +
-		"WHERE Supporter.uuid = ? " +
-		"GROUP BY Supporter.id "
+	SupporterQuery := "SELECT profile.id, profile.uuid, profile.email, profile.firstname, profile.lastname, CONCAT(profile.firstname, ' ', profile.lastname) AS fullname, profile.birthdate, profile.sex, profile.updated, profile.created " +
+		"FROM profile LEFT JOIN profile_has_address ON profile.id = profile_has_address.profile_id " +
+		"LEFT JOIN avatar ON profile.id = avatar.profile_id " +
+		"LEFT JOIN profile_has_entity ON profile.id = profile_has_entity.profile_id " +
+		"WHERE profile.uuid = ? " +
+		"GROUP BY profile.id "
 	rows, err := utils.DB.Query(SupporterQuery, search)
 	if err != nil {
 		log.Print("Database Error", err)
@@ -59,11 +57,9 @@ func GetSupporter(search string) (Supporters []models.Supporter, err error) {
  */
 func GetSupporterList(page *models.Page, sort string, filter *models.FilterSupporter) (Supporters []models.Supporter, err error) {
 	// execute the query
-	SupporterQuery := "SELECT u.id, u.uuid, p.email, p.first_name, p.last_name, u.updated, u.created " +
-		"FROM Supporter AS u LEFT JOIN Profile AS p ON u.id = p.Supporter_id " +
-		"LEFT JOIN Supporter_has_Role ON u.id = Supporter_has_Role.Supporter_id " +
-		"LEFT JOIN Role ON Supporter_has_Role.Role_Id = Role.id " +
-		"WHERE p.email LIKE ? " +
+	SupporterQuery := "SELECT profile.id, profile.uuid, profile.email, profile.firstname, profile.lastname, CONCAT(profile.firstname, ' ', profile.lastname) AS fullname, profile.updated, profile.created " +
+		"FROM profile LEFT JOIN profile_has_entity ON profile.id = profile_has_entity.profile_id " +
+		"WHERE profile.email LIKE ? " +
 		"GROUP BY u.id " +
 		sort + " " +
 		"LIMIT ?, ?"
@@ -111,7 +107,7 @@ func UpdateSupporter(Supporter *models.Supporter) (err error) {
 		return err
 	}
 	//slect id
-	rows, err := tx.Query("SELECT id FROM Supporter WHERE uuid = ?", Supporter.Uuid)
+	rows, err := tx.Query("SELECT id FROM profile WHERE uuid = ?", Supporter.Uuid)
 	var id int
 	for rows.Next() {
 		err = rows.Scan(&id)
@@ -127,14 +123,14 @@ func UpdateSupporter(Supporter *models.Supporter) (err error) {
 	}
 
 	//update Supporter Supporter
-	_, err = tx.Exec("UPDATE Supporter SET updated = ? WHERE id = ?", time.Now().Unix(), id)
+	_, err = tx.Exec("UPDATE profile SET updated = ? WHERE id = ?", time.Now().Unix(), id)
 	if err != nil {
 		tx.Rollback()
 		log.Print("Database Error: ", err)
 		return err
 	}
 	//update profile
-	_, err = tx.Exec("UPDATE Profile SET first_name = ?, last_name = ? WHERE Supporter_id = ?", Supporter.FirstName, Supporter.LastName, id)
+	_, err = tx.Exec("UPDATE profile SET firstname = ?, lastname = ? WHERE id = ?", Supporter.FirstName, Supporter.LastName, id)
 	if err != nil {
 		tx.Rollback()
 		log.Print("Database Error: ", err)
@@ -155,16 +151,27 @@ func CreateSupporter(Supporter *models.SupporterCreate) (err error) {
 		return err
 	}
 
-	//Insert Supporter Supporter
-	id := uuid.New()
-	_, err = tx.Exec("UPDATE Supporter SET updated = ? WHERE id = ?", time.Now().Unix(), id)
-	if err != nil {
-		tx.Rollback()
-		log.Print("Database Error: ", err)
+	// Check for existing profile
+	rows, err := tx.Query("SELECT id FROM profile WHERE email = ?", Supporter.email)
+	var id int
+	for rows.Next() {
+		err = rows.Scan(&id)
+		if err != nil {
+			log.Print("Database Error: ", err)
+			return err
+		}
+	}
+	//if id == 0 return NotFound
+	if id != 0 {
+		err = utils.ErrorConflict
 		return err
 	}
-	//update profile
-	_, err = tx.Exec("UPDATE Profile SET first_name = ?, last_name = ? WHERE Supporter_id = ?", Supporter.FirstName, Supporter.LastName, id)
+
+	// Insert Profile
+	id := uuid.New()
+	_, err = tx.Exec("INSERT INTO profile (uuid, firstname, lastname, email, mobile, birthdate, sex, updated, created) VALUES "+
+		"(?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		Supporter.uuid, Supporter.firstname, Supporter.lastname, Supporter.email, Supporter.mobile, Supporter.birthdate, time.Now().Unix(), time.Now().Unix())
 	if err != nil {
 		tx.Rollback()
 		log.Print("Database Error: ", err)
@@ -196,7 +203,8 @@ func DeleteSupporter(deleteBody *models.DeleteBody) (err error) {
 		return err
 	}
 
-	//update Supporter Supporter
+	// Delete profike
+	// TODO DELETE PROFILE AND CORRESPONDING RELATIONS
 	_, err = tx.Exec("DELETE FROM Supporter WHERE id = ?", id)
 	if err != nil {
 		tx.Rollback()
