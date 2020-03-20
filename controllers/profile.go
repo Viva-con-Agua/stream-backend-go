@@ -33,9 +33,9 @@ func JoinSupporterRole(c echo.Context) (err error) {
 	return c.JSON(http.StatusCreated, pool.Created())
 }
 
-func GetSupporter(c echo.Context) (err error) {
+func GetProfile(c echo.Context) (err error) {
 	uuid := c.Param("id")
-	response, err := database.GetSupporter(uuid)
+	response, err := database.GetProfile(uuid)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, pool.InternelServerError)
 	}
@@ -46,10 +46,10 @@ func GetSupporter(c echo.Context) (err error) {
 }
 
 /**
- * Response list of models.Supporter
+ * Response list of models.Profile
  */
-func GetSupporterList(c echo.Context) (err error) {
-	query := new(models.QuerySupporter)
+func GetProfileList(c echo.Context) (err error) {
+	query := new(models.QueryProfile)
 	if err = c.Bind(query); err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -57,16 +57,16 @@ func GetSupporterList(c echo.Context) (err error) {
 	page := query.Page()
 	sort := query.OrderBy()
 	filter := query.Filter()
-	response, err := database.GetSupporterList(page, sort, filter)
+	response, err := database.GetProfileList(page, sort, filter)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, pool.InternelServerError)
 	}
 	return c.JSON(http.StatusOK, response)
 }
 
-func UpdateSupporter(c echo.Context) (err error) {
-	// create body as models.Supporter
-	body := new(models.Supporter)
+func UpdateProfile(c echo.Context) (err error) {
+	// create body as models.Profile
+	body := new(models.Profile)
 	// save data to body
 	if err = c.Bind(body); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
@@ -76,7 +76,7 @@ func UpdateSupporter(c echo.Context) (err error) {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 	// update body into database
-	if err = database.UpdateSupporter(body); err != nil {
+	if err = database.UpdateProfile(body); err != nil {
 		if err == utils.ErrorNotFound {
 			return c.JSON(http.StatusNoContent, pool.NoContent(body.Uuid))
 		}
@@ -86,8 +86,30 @@ func UpdateSupporter(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, pool.Updated(body.Uuid))
 }
 
-func DeleteSupporter(c echo.Context) (err error) {
-	// create body as models.Supporter
+func CreateProfile(c echo.Context) (err error) {
+	// create body as models.ProfileCreate
+	body := new(models.ProfileCreate)
+	// save data to body
+	if err = c.Bind(body); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	// validate body
+	if err = c.Validate(body); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	// update body into database
+	if err = database.CreateProfile(body); err != nil {
+		if err == utils.ErrorConflict {
+			return c.JSON(http.StatusNoContent, pool.Conflict())
+		}
+		return c.JSON(http.StatusInternalServerError, pool.InternelServerError())
+	}
+	// response created
+	return c.JSON(http.StatusOK, pool.Created())
+}
+
+func DeleteProfile(c echo.Context) (err error) {
+	// create body as models.DeleteBody
 	body := new(models.DeleteBody)
 	// save data to body
 	if err = c.Bind(body); err != nil {
@@ -98,7 +120,7 @@ func DeleteSupporter(c echo.Context) (err error) {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 	// update body into database
-	if err = database.DeleteSupporter(body); err != nil {
+	if err = database.DeleteProfile(body); err != nil {
 		if err == utils.ErrorNotFound {
 			return c.JSON(http.StatusNoContent, pool.NoContent(body.Uuid))
 		}
