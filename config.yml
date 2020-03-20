@@ -4,3 +4,7 @@ db:
   password: stream
   port: 3306
   name: stream
+redis:
+  host: 172.2.150.2
+  port: 6379 
+

@@ -24,6 +24,7 @@ func main() {
     utils.LoadConfig()
     utils.ConnectDatabase()
     store := pool.RedisSession("172.2.150.2:6379")
+    //store := pool.RedisSession(Config.REDIS.Host + ":" + Config.REDIS.Port)
 
     //create echo server
     e := echo.New()
@@ -33,7 +34,10 @@ func main() {
     // TODO: Listen for user creation on nats
 
     apiV1 := e.Group("/backend/stream/api/v1")
-    // TODO REENABLE AUTHENTICATION
+
+    // TODO: Set correct path
+    // apiV1 := e.Group("/api/v1")
+    // TODO: Reenable authentication
     //apiV1.Use(pool.SessionAuth)
 
     /*

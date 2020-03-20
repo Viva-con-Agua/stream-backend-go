@@ -11,10 +11,10 @@ run `docker-compose up -d stream-database`
 
 ## development
 
-### 1. Install Golang 
+### 1. Install Go language 
 Like here: https://itrig.de/index.php?/archives/2377-Installation-einer-aktuellen-Go-Version-auf-Ubuntu.html
 
-### Install dependecies
+### 2. Install dependecies
 ```
 go get github.com/go-playground/validator
 go get github.com/go-redis/redis
