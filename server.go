@@ -6,6 +6,7 @@ import (
     "github.com/Viva-con-Agua/echo-pool/pool"
     "github.com/go-playground/validator"
     "github.com/labstack/echo"
+    "strconv"
 )
 
 type (
@@ -23,8 +24,7 @@ func main() {
     // intial loading function
     utils.LoadConfig()
     utils.ConnectDatabase()
-    store := pool.RedisSession("172.2.150.2:6379")
-    //store := pool.RedisSession(Config.REDIS.Host + ":" + Config.REDIS.Port)
+    store := pool.RedisSession(utils.Config.Redis.Host + ":" + strconv.Itoa(utils.Config.Redis.Port))
 
     //create echo server
     e := echo.New()
