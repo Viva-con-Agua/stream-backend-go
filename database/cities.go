@@ -9,9 +9,9 @@ import (
 )
 
 /**
- * insert role into database
+ * insert City into database
  */
-func PostRole(r *models.RoleCreate) (err error) {
+func PostCity(r *models.CityCreate) (err error) {
 	// Create uuid
 	Uuid, err := uuid.NewRandom()
 	if err != nil {
@@ -24,8 +24,8 @@ func PostRole(r *models.RoleCreate) (err error) {
 		log.Print("Database Error: ", err)
 		return err
 	}
-	// insert role
-	_, err = tx.Exec("INSERT INTO Role (uuid, name, pillar) VALUES(?, ?, ?)", Uuid.String(), r.Name, r.Pillar)
+	// insert City
+	_, err = tx.Exec("INSERT INTO City (uuid, name, pillar) VALUES(?, ?, ?)", Uuid.String(), r.Name, r.Pillar)
 	if err != nil {
 		tx.Rollback()
 		log.Print("Database Error: ", err)
@@ -35,11 +35,11 @@ func PostRole(r *models.RoleCreate) (err error) {
 }
 
 /**
- * select a list of models.Roles
+ * select a list of models.Cities
  */
-func GetRolesList() (roles []models.Role, err error) {
+func GetCitiesList() (Cities []models.City, err error) {
 	// Execute the Query
-	rows, err := utils.DB.Query("SELECT * FROM Role")
+	rows, err := utils.DB.Query("SELECT * FROM City")
 	if err != nil {
 		log.Print("Database Error", err)
 		return nil, err
@@ -55,22 +55,22 @@ func GetRolesList() (roles []models.Role, err error) {
 			log.Print("Database Error: ", err)
 			return nil, err
 		}
-		// fill models.Role
-		role := new(models.Role)
-		role.Uuid = uuid
-		role.Name = name
-		role.Pillar = pillar
-		roles = append(roles, *role)
+		// fill models.City
+		City := new(models.City)
+		City.Uuid = uuid
+		City.Name = name
+		City.Pillar = pillar
+		Cities = append(Cities, *City)
 	}
-	return roles, err
+	return Cities, err
 }
 
 /**
- * select roles for an given Supporter_id
+ * select Cities for an given Crew_id
  */
-func GetRolesByProfileId(Supporter_id int) (roles []models.Role, err error) {
+func GetCitiesByCrewId(Crew_id int) (Cities []models.City, err error) {
 	// Execute the Query
-	rows, err := utils.DB.Query("SELECT * FROM Supporter_has_Role LEFT JOIN Role ON Supporter_has_Role.Role_Id = Role.id WHERE Supporter_has_Role.Supporter_id = ?", Supporter_id)
+	rows, err := utils.DB.Query("SELECT * FROM Crew_has_City LEFT JOIN City ON Crew_has_City.City_Id = City.id WHERE Crew_has_City.Crew_id = ?", Crew_id)
 	if err != nil {
 		log.Print("Database Error", err)
 		return nil, err
@@ -86,12 +86,12 @@ func GetRolesByProfileId(Supporter_id int) (roles []models.Role, err error) {
 			log.Print("Database Error: ", err)
 			return nil, err
 		}
-		// fill models.Role
-		role := new(models.Role)
-		role.Uuid = uuid
-		role.Name = name
-		role.Pillar = pillar
-		roles = append(roles, *role)
+		// fill models.City
+		City := new(models.City)
+		City.Uuid = uuid
+		City.Name = name
+		City.Pillar = pillar
+		Cities = append(Cities, *City)
 	}
-	return roles, err
+	return Cities, err
 }
