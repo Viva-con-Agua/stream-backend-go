@@ -13,6 +13,11 @@ var (
 			Port     int    `default:"3306"`
 			Name     string `required:"true"`
 		}
+
+		Redis struct {
+			Host string `required:"true"`
+			Port int    `default:"6379"`
+		}
 	}{}
 )
 

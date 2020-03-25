@@ -10,32 +10,9 @@ import (
 	"github.com/labstack/echo"
 )
 
-/**
- * join Supporter to role
- */
-func JoinSupporterRole(c echo.Context) (err error) {
-
-	// create body as models.Role
-	body := new(models.AssignBody)
-	// save data to body
-	if err = c.Bind(body); err != nil {
-		return c.JSON(http.StatusBadRequest, err)
-	}
-	// validate body
-	if err = c.Validate(body); err != nil {
-		return c.JSON(http.StatusBadRequest, err)
-	}
-	// insert body into database
-	if err = database.JoinSupporterRole(body); err != nil {
-		return c.JSON(http.StatusInternalServerError, pool.InternelServerError)
-	}
-	// response created
-	return c.JSON(http.StatusCreated, pool.Created())
-}
-
-func GetProfile(c echo.Context) (err error) {
+func GetDepositById(c echo.Context) (err error) {
 	uuid := c.Param("id")
-	response, err := database.GetProfile(uuid)
+	response, err := database.GetDepositById(uuid)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, pool.InternelServerError)
 	}
@@ -46,10 +23,10 @@ func GetProfile(c echo.Context) (err error) {
 }
 
 /**
- * Response list of models.Profile
+ * Response list of models.Deposit
  */
-func GetProfileList(c echo.Context) (err error) {
-	query := new(models.QueryProfile)
+func GetDepositCount(c echo.Context) (err error) {
+	query := new(models.QueryDeposit)
 	if err = c.Bind(query); err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -57,16 +34,35 @@ func GetProfileList(c echo.Context) (err error) {
 	page := query.Page()
 	sort := query.OrderBy()
 	filter := query.Filter()
-	response, err := database.GetProfileList(page, sort, filter)
+	response, err := database.GetDepositCount(page, sort, filter)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, pool.InternelServerError)
 	}
 	return c.JSON(http.StatusOK, response)
 }
 
-func UpdateProfile(c echo.Context) (err error) {
-	// create body as models.Profile
-	body := new(models.Profile)
+/**
+ * Response list of models.Deposit
+ */
+func GetDepositList(c echo.Context) (err error) {
+	query := new(models.QueryDeposit)
+	if err = c.Bind(query); err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+	query.Defaults()
+	page := query.Page()
+	sort := query.OrderBy()
+	filter := query.Filter()
+	response, err := database.GetDepositList(page, sort, filter)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, pool.InternelServerError)
+	}
+	return c.JSON(http.StatusOK, response)
+}
+
+func UpdateDeposit(c echo.Context) (err error) {
+	// create body as models.Deposit
+	body := new(models.Deposit)
 	// save data to body
 	if err = c.Bind(body); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
@@ -76,7 +72,7 @@ func UpdateProfile(c echo.Context) (err error) {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 	// update body into database
-	if err = database.UpdateProfile(body); err != nil {
+	if err = database.UpdateDeposit(body); err != nil {
 		if err == utils.ErrorNotFound {
 			return c.JSON(http.StatusNoContent, pool.NoContent(body.Uuid))
 		}
@@ -86,9 +82,9 @@ func UpdateProfile(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, pool.Updated(body.Uuid))
 }
 
-func CreateProfile(c echo.Context) (err error) {
-	// create body as models.ProfileCreate
-	body := new(models.ProfileCreate)
+func CreateDeposit(c echo.Context) (err error) {
+	// create body as models.DepositCreate
+	body := new(models.DepositCreate)
 	// save data to body
 	if err = c.Bind(body); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
@@ -98,7 +94,7 @@ func CreateProfile(c echo.Context) (err error) {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 	// update body into database
-	if err = database.CreateProfile(body); err != nil {
+	if err = database.CreateDeposit(body); err != nil {
 		if err == utils.ErrorConflict {
 			return c.JSON(http.StatusNoContent, pool.Conflict())
 		}
@@ -108,9 +104,9 @@ func CreateProfile(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, pool.Created())
 }
 
-func DeleteProfile(c echo.Context) (err error) {
-	// create body as models.DeleteBody
-	body := new(models.DeleteBody)
+func ConfirmDeposit(c echo.Context) (err error) {
+	// create body as models.DepositCreate
+	body := new(models.DepositCreate)
 	// save data to body
 	if err = c.Bind(body); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
@@ -120,12 +116,12 @@ func DeleteProfile(c echo.Context) (err error) {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 	// update body into database
-	if err = database.DeleteProfile(body); err != nil {
-		if err == utils.ErrorNotFound {
-			return c.JSON(http.StatusNoContent, pool.NoContent(body.Uuid))
+	if err = database.CreateDeposit(body); err != nil {
+		if err == utils.ErrorConflict {
+			return c.JSON(http.StatusNoContent, pool.Conflict())
 		}
 		return c.JSON(http.StatusInternalServerError, pool.InternelServerError())
 	}
 	// response created
-	return c.JSON(http.StatusOK, pool.Deleted(body.Uuid))
+	return c.JSON(http.StatusOK, pool.Created())
 }
