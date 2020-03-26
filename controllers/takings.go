@@ -3,10 +3,10 @@ package controllers
 import (
 	"net/http"
 
-	"../database"
-	"../models"
-	"../utils"
-	"github.com/Viva-con-Agua/echo-pool/pool"
+	"stream-backend-go/database"
+	"stream-backend-go/models"
+	"stream-backend-go/utils"
+	"github.com/Viva-con-Agua/echo-pool/resp"
 	"github.com/labstack/echo"
 )
 
@@ -24,7 +24,7 @@ func GetTakingList(c echo.Context) (err error) {
 	filter := query.Filter()
 	response, err := database.GetTakingList(page, sort, filter)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, pool.InternelServerError)
+		return c.JSON(http.StatusInternalServerError, resp.InternelServerError)
 	}
 	return c.JSON(http.StatusOK, response)
 }
@@ -43,7 +43,7 @@ func GetTakingCount(c echo.Context) (err error) {
 	filter := query.Filter()
 	response, err := database.GetTakingList(page, sort, filter)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, pool.InternelServerError)
+		return c.JSON(http.StatusInternalServerError, resp.InternelServerError)
 	}
 	return c.JSON(http.StatusOK, response)
 }
@@ -52,10 +52,10 @@ func GetTakingById(c echo.Context) (err error) {
 	uuid := c.Param("id")
 	response, err := database.GetTakingById(uuid)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, pool.InternelServerError)
+		return c.JSON(http.StatusInternalServerError, resp.InternelServerError)
 	}
 	if response == nil {
-		return c.JSON(http.StatusNoContent, pool.NoContent(uuid))
+		return c.JSON(http.StatusNoContent, resp.NoContent(uuid))
 	}
 	return c.JSON(http.StatusOK, response)
 }
@@ -74,12 +74,12 @@ func CreateTaking(c echo.Context) (err error) {
 	// update body into database
 	if err = database.CreateTaking(body); err != nil {
 		if err == utils.ErrorConflict {
-			return c.JSON(http.StatusNoContent, pool.Conflict())
+			return c.JSON(http.StatusNoContent, resp.Conflict())
 		}
-		return c.JSON(http.StatusInternalServerError, pool.InternelServerError())
+		return c.JSON(http.StatusInternalServerError, resp.InternelServerError())
 	}
 	// response created
-	return c.JSON(http.StatusOK, pool.Created())
+	return c.JSON(http.StatusOK, resp.Created())
 }
 
 func UpdateTaking(c echo.Context) (err error) {
@@ -96,10 +96,10 @@ func UpdateTaking(c echo.Context) (err error) {
 	// update body into database
 	if err = database.UpdateTaking(body); err != nil {
 		if err == utils.ErrorNotFound {
-			return c.JSON(http.StatusNoContent, pool.NoContent(body.Uuid))
+			return c.JSON(http.StatusNoContent, resp.NoContent(body.Uuid))
 		}
-		return c.JSON(http.StatusInternalServerError, pool.InternelServerError())
+		return c.JSON(http.StatusInternalServerError, resp.InternelServerError())
 	}
 	// response created
-	return c.JSON(http.StatusOK, pool.Updated(body.Uuid))
+	return c.JSON(http.StatusOK, resp.Updated(body.Uuid))
 }

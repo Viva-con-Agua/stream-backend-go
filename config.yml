@@ -4,7 +4,20 @@ db:
   password: stream
   port: 3306
   name: stream
+
 redis:
-  host: 172.2.150.2
-  port: 6379 
+  url: 172.2.150.2:6379
+
+nats:
+  url: nats://172.2.150.1:4222
+
+drops:
+  url:
+    code: http://172.2.20.2/drops/oauth2/code/get
+    redirect: http://172.2.20.2/auth/newbackend/code
+    token: http://172.2.20.2/drops/oauth2/access_token
+    user: http://172.2.20.2/drops/oauth2/rest/profile
+  oauth:
+    clientid: streamer
+
 

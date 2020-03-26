@@ -1,12 +1,13 @@
 package main
 
 import (
-    "./controllers"
-    "./utils"
-    "github.com/Viva-con-Agua/echo-pool/pool"
+    "stream-backend-go/controllers"
+    "stream-backend-go/utils"
+    "github.com/Viva-con-Agua/echo-pool/auth"
+    "github.com/Viva-con-Agua/echo-pool/config"
     "github.com/go-playground/validator"
     "github.com/labstack/echo"
-    "strconv"
+    //"strconv"
 )
 
 type (
@@ -23,8 +24,11 @@ func main() {
 
     // intial loading function
     utils.LoadConfig()
+		config.LoadConfig()
+    
+
     utils.ConnectDatabase()
-    store := pool.RedisSession(utils.Config.Redis.Host + ":" + strconv.Itoa(utils.Config.Redis.Port))
+		store := auth.RedisSession()
 
     //create echo server
     e := echo.New()

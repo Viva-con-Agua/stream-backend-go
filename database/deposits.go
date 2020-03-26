@@ -1,8 +1,8 @@
 package database
 
 import (
-	"../models"
-	"../utils"
+	"stream-backend-go/models"
+	"stream-backend-go/utils"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"log"

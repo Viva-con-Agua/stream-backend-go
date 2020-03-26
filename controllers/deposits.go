@@ -3,10 +3,10 @@ package controllers
 import (
 	"net/http"
 
-	"../database"
-	"../models"
-	"../utils"
-	"github.com/Viva-con-Agua/echo-pool/pool"
+	"stream-backend-go/database"
+	"stream-backend-go/models"
+	"stream-backend-go/utils"
+	"github.com/Viva-con-Agua/echo-pool/resp"
 	"github.com/labstack/echo"
 )
 
@@ -14,10 +14,10 @@ func GetDepositById(c echo.Context) (err error) {
 	uuid := c.Param("id")
 	response, err := database.GetDepositById(uuid)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, pool.InternelServerError)
+		return c.JSON(http.StatusInternalServerError, resp.InternelServerError)
 	}
 	if response == nil {
-		return c.JSON(http.StatusNoContent, pool.NoContent(uuid))
+		return c.JSON(http.StatusNoContent, resp.NoContent(uuid))
 	}
 	return c.JSON(http.StatusOK, response)
 }
@@ -36,7 +36,7 @@ func GetDepositCount(c echo.Context) (err error) {
 	filter := query.Filter()
 	response, err := database.GetDepositCount(page, sort, filter)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, pool.InternelServerError)
+		return c.JSON(http.StatusInternalServerError, resp.InternelServerError)
 	}
 	return c.JSON(http.StatusOK, response)
 }
@@ -55,7 +55,7 @@ func GetDepositList(c echo.Context) (err error) {
 	filter := query.Filter()
 	response, err := database.GetDepositList(page, sort, filter)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, pool.InternelServerError)
+		return c.JSON(http.StatusInternalServerError, resp.InternelServerError)
 	}
 	return c.JSON(http.StatusOK, response)
 }
@@ -74,12 +74,12 @@ func UpdateDeposit(c echo.Context) (err error) {
 	// update body into database
 	if err = database.UpdateDeposit(body); err != nil {
 		if err == utils.ErrorNotFound {
-			return c.JSON(http.StatusNoContent, pool.NoContent(body.Uuid))
+			return c.JSON(http.StatusNoContent, resp.NoContent(body.Uuid))
 		}
-		return c.JSON(http.StatusInternalServerError, pool.InternelServerError())
+		return c.JSON(http.StatusInternalServerError, resp.InternelServerError())
 	}
 	// response created
-	return c.JSON(http.StatusOK, pool.Updated(body.Uuid))
+	return c.JSON(http.StatusOK, resp.Updated(body.Uuid))
 }
 
 func CreateDeposit(c echo.Context) (err error) {
@@ -96,12 +96,12 @@ func CreateDeposit(c echo.Context) (err error) {
 	// update body into database
 	if err = database.CreateDeposit(body); err != nil {
 		if err == utils.ErrorConflict {
-			return c.JSON(http.StatusNoContent, pool.Conflict())
+			return c.JSON(http.StatusNoContent, resp.Conflict())
 		}
-		return c.JSON(http.StatusInternalServerError, pool.InternelServerError())
+		return c.JSON(http.StatusInternalServerError, resp.InternelServerError())
 	}
 	// response created
-	return c.JSON(http.StatusOK, pool.Created())
+	return c.JSON(http.StatusOK, resp.Created())
 }
 
 func ConfirmDeposit(c echo.Context) (err error) {
@@ -118,10 +118,10 @@ func ConfirmDeposit(c echo.Context) (err error) {
 	// update body into database
 	if err = database.CreateDeposit(body); err != nil {
 		if err == utils.ErrorConflict {
-			return c.JSON(http.StatusNoContent, pool.Conflict())
+			return c.JSON(http.StatusNoContent, resp.Conflict())
 		}
-		return c.JSON(http.StatusInternalServerError, pool.InternelServerError())
+		return c.JSON(http.StatusInternalServerError, resp.InternelServerError())
 	}
 	// response created
-	return c.JSON(http.StatusOK, pool.Created())
+	return c.JSON(http.StatusOK, resp.Created())
 }
