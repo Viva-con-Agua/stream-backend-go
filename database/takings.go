@@ -1,12 +1,13 @@
 package database
 
 import (
+	"log"
 	"stream-backend-go/models"
 	"stream-backend-go/utils"
+	"time"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
-	"log"
-	"time"
 )
 
 /**

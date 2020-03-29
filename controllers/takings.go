@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"net/http"
+    "net/http"
 
 	"stream-backend-go/database"
 	"stream-backend-go/models"
@@ -14,6 +14,7 @@ import (
  * Response list of models.Taking
  */
 func GetTakingList(c echo.Context) (err error) {
+<<<<<<< HEAD
 	query := new(models.QueryTaking)
 	if err = c.Bind(query); err != nil {
 		return c.JSON(http.StatusInternalServerError, err)

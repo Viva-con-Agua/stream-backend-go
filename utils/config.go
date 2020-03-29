@@ -1,26 +1,26 @@
 package utils
 
 import (
-	"github.com/jinzhu/configor"
+    "github.com/jinzhu/configor"
 )
 
 var (
-	Config = struct {
-		DB struct {
-			Host     string `required:"true"`
-			User     string `default:"admin"`
-			Password string `default:"admin"`
-			Port     int    `default:"3306"`
-			Name     string `required:"true"`
-		}
+    Config = struct {
+        DB struct {
+            Host     string `required:"true"`
+            User     string `default:"admin"`
+            Password string `default:"admin"`
+            Port     int    `default:"3306"`
+            Name     string `required:"true"`
+        }
 
-		Redis struct {
-			Host string `required:"true"`
-			Port int    `default:"6379"`
-		}
-	}{}
+        Redis struct {
+            Host string `required:"true"`
+            Port int    `default:"6379"`
+        }
+    }{}
 )
 
 func LoadConfig() {
-	configor.Load(&Config, "config.yml")
+    configor.Load(&Config, "config.yml")
 }
